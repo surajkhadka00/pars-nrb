@@ -1,0 +1,5 @@
+[allowlist]
+  description = "IDE-generated Eclipse metadata is not application source"
+  paths = [
+    '''\.metadata/''',
+  ]
