@@ -1,0 +1,112 @@
+spring:
+  application:
+    name: pars-nrb
+  profiles:
+    default: dev
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+  jackson:
+    time-zone: Asia/Kathmandu
+    serialization:
+      write-dates-as-timestamps: false
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    properties:
+      hibernate:
+        default_schema: pars
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: ${PARS_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+pars:
+  storage:
+    deal-attachments: ${PARS_DEAL_ATTACHMENT_DIR:/var/data/nrb-pars-attachments}
+  security:
+    jwt:
+      access-token-ttl: 15m
+      refresh-token-ttl: 7d
+    lockout:
+      max-failed-attempts: 5
+      lock-duration: 15m
+    inactivity:
+      session-timeout: 30m
+      user-expire-after: 90d
+    rate-limit:
+      login-max-attempts: 10
+      login-window: 1m
+  # AI/RAG module. Disabled by default; no AI beans or endpoints are active otherwise.
+  ai:
+    enabled: ${PARS_AI_ENABLED:false}
+    provider: ${PARS_AI_PROVIDER:openai}
+    chat-model: ${PARS_AI_CHAT_MODEL:gpt-4o-mini}
+    embedding-model: ${PARS_AI_EMBEDDING_MODEL:text-embedding-3-small}
+    # Never put a real key here: supply PARS_AI_API_KEY from the environment/secret store.
+    api-key: ${PARS_AI_API_KEY:}
+    base-url: ${PARS_AI_BASE_URL:}
+    max-tokens: ${PARS_AI_MAX_TOKENS:1500}
+    temperature: ${PARS_AI_TEMPERATURE:0.2}
+    timeout: ${PARS_AI_TIMEOUT:30s}
+    max-concurrent-requests: ${PARS_AI_MAX_CONCURRENT_REQUESTS:4}
+    embedding-dimensions: ${PARS_AI_EMBEDDING_DIMENSIONS:1536}
+    embedding-model-version: ${PARS_AI_EMBEDDING_MODEL_VERSION:1}
+    storage-path: ${PARS_AI_STORAGE_DIR:/var/data/nrb-pars-ai}
+    max-file-size-bytes: ${PARS_AI_MAX_FILE_BYTES:20971520}
+    chunk-size-tokens: ${PARS_AI_CHUNK_SIZE:600}
+    chunk-overlap-tokens: ${PARS_AI_CHUNK_OVERLAP:100}
+    retrieval-top-k: ${PARS_AI_TOP_K:10}
+    final-passages: ${PARS_AI_FINAL_PASSAGES:5}
+    similarity-threshold: ${PARS_AI_SIMILARITY_THRESHOLD:0.35}
+    evidence-threshold: ${PARS_AI_EVIDENCE_THRESHOLD:0.45}
+    reranker-enabled: ${PARS_AI_RERANKER_ENABLED:false}
+    daily-question-limit: ${PARS_AI_DAILY_LIMIT:100}
+    requests-per-minute: ${PARS_AI_RPM:20}
+
+  # Official NRB external sources. Crawler disabled until policy approval.
+  nrb:
+    forex-api-base-url: ${NRB_FOREX_API_BASE_URL:https://www.nrb.org.np/api/forex/v1/}
+    website-base-url: ${NRB_WEBSITE_BASE_URL:https://www.nrb.org.np/}
+    crawler-enabled: ${NRB_CRAWLER_ENABLED:false}
+    crawler-user-agent: ${NRB_CRAWLER_USER_AGENT:PARS-NRB-KnowledgeBot/1.0}
+    crawler-delay-ms: ${NRB_CRAWLER_DELAY_MS:2000}
+    sync-cron: ${NRB_SYNC_CRON:0 0 6 * * *}
+    forex-cache-ttl: ${NRB_FOREX_CACHE_TTL:10m}
+    max-download-size: ${NRB_MAX_DOWNLOAD_SIZE:20971520}
+    allowed-domains: ${NRB_ALLOWED_DOMAINS:www.nrb.org.np,nrb.org.np}
+    connect-timeout: ${NRB_CONNECT_TIMEOUT:10s}
+    response-timeout: ${NRB_RESPONSE_TIMEOUT:20s}
+    max-retries: ${NRB_MAX_RETRIES:3}
+    retry-backoff-ms: ${NRB_RETRY_BACKOFF_MS:500}
+    max-per-page: ${NRB_MAX_PER_PAGE:100}
+    max-pages-per-query: ${NRB_MAX_PAGES_PER_QUERY:20}
+    lookback-days: ${NRB_LOOKBACK_DAYS:7}
+
+logging:
+  pattern:
+    level: "%5p [traceId=%X{traceId} userId=%X{userId} sessionId=%X{sessionId}]"

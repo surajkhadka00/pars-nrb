@@ -1,0 +1,22 @@
+[Unit]
+Description=Nepal Rastra Bank PARS Spring Boot Application
+After=network.target
+
+[Service]
+User=phoenix
+WorkingDirectory=/[path]/
+
+
+Environment="SPRING_PROFILES_ACTIVE=stag"
+Environment="PARS_DB_USER="
+Environment="PARS_DB_PASSWORD="
+Environment="PARS_JWT_SECRET="
+# Unset uses the profile default (staging: https://phnx.pars.com.np). Comma-separate extra browser origins.
+# Environment="PARS_CORS_ORIGINS=https://phnx.pars.com.np"
+
+ExecStart=/usr/bin/java -jar /[path]/xxx.jar
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

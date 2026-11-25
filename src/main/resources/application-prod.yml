@@ -1,0 +1,36 @@
+spring:
+  datasource:
+    url: ${PARS_DB_URL}
+    username: ${PARS_DB_USER}
+    password: ${PARS_DB_PASSWORD}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: never
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+server:
+  port: ${PARS_PORT:8114}
+
+pars:
+  storage:
+    deal-attachments: ${PARS_DEAL_ATTACHMENT_DIR:/var/data/nrb-pars-attachments}
+  security:
+    jwt:
+      secret: ${PARS_JWT_SECRET}
+    cors:
+      allowed-origins: ${PARS_CORS_ORIGINS}
+
+logging:
+  level:
+    root: INFO
+    np.org.nrb.pars: INFO

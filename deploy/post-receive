@@ -1,0 +1,30 @@
+set -e
+
+REPO=/[path_to_repo]/xxx.git
+APP=/[path_to_app]/xxx
+DEPLOY=/[path_to_deploy]/xxx
+
+while read oldrev newrev refname
+do
+    if [ "$refname" = "refs/heads/master" ]; then
+
+        echo "Deploying master..."
+
+        git --work-tree="$APP" \
+            --git-dir="$REPO" \
+            checkout -f master
+
+        cd "$APP"
+
+        mvn clean package -DskipTests
+
+        cp target/*.jar "$DEPLOY/xxx.jar"
+
+        sudo systemctl restart xxx
+
+        echo "Deployment completed."
+    fi
+done
+#add user to sudoers file
+# sudo visudo
+# phoenix ALL=(root) NOPASSWD: /usr/bin/systemctl restart xxx.service, /usr/bin/systemctl status xxx.service

@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: ${PARS_DB_URL:jdbc:postgresql://localhost:5432/nrb_pars_stag?currentSchema=pars}
+    username: ${PARS_DB_USER}
+    password: ${PARS_DB_PASSWORD}
+server:
+  port: ${PARS_PORT:8114}
+
+pars:
+  storage:
+    deal-attachments: ${PARS_DEAL_ATTACHMENT_DIR:/var/data/nrb-pars-attachments}
+  security:
+    jwt:
+      secret: ${PARS_JWT_SECRET}
+    cors:
+      allowed-origins: ${PARS_CORS_ORIGINS:https://phnx.pars.com.np}
+
+logging:
+  level:
+    np.org.nrb.pars: INFO

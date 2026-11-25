@@ -1,0 +1,50 @@
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: nrb_pars
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${PARS_DB_PASSWORD:-123456}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pars_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nrb_pars"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      PARS_DB_URL: jdbc:postgresql://db:5432/nrb_pars?currentSchema=pars
+      PARS_DB_USER: postgres
+      PARS_DB_PASSWORD: ${PARS_DB_PASSWORD:-123456}
+      PARS_AI_ENABLED: ${PARS_AI_ENABLED:-false}
+      PARS_AI_API_KEY: ${PARS_AI_API_KEY:-}
+      PARS_AI_PROVIDER: ${PARS_AI_PROVIDER:-ollama}
+      PARS_AI_EMBEDDING_DIMENSIONS: ${PARS_AI_EMBEDDING_DIMENSIONS:-768}
+      PARS_CORS_ORIGINS: http://localhost:5173
+    ports:
+      - "8080:8080"
+    volumes:
+      - pars_attachments:/data/attachments
+      - pars_ai_storage:/data/ai
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+volumes:
+  pars_pgdata:
+  pars_attachments:
+  pars_ai_storage:

@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: ${PARS_DB_URL:jdbc:postgresql://localhost:5432/nrb_pars?currentSchema=pars}
+    username: ${PARS_DB_USER:postgres}
+    password: ${PARS_DB_PASSWORD:123456}
+  flyway:
+    validate-on-migrate: false
+
+pars:
+  storage:
+    deal-attachments: ${PARS_DEAL_ATTACHMENT_DIR:/var/data/nrb-pars-attachments}
+  security:
+    jwt:
+      secret: ${PARS_JWT_SECRET:change-me-in-production-use-a-256-bit-secret-key}
+    cors:
+      # Vite dev server runs on http://localhost:5173 (see frontend/vite.config.ts).
+      # If you change the Vite port, restart the backend with
+      # PARS_CORS_ORIGINS set to the exact new origin.
+      allowed-origins: ${PARS_CORS_ORIGINS:http://localhost:5173}
+
+logging:
+  level:
+    np.org.nrb.pars: DEBUG
