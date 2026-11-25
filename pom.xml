@@ -28,7 +28,7 @@
         <poi.version>5.4.1</poi.version>
         <!-- Verified: Spring AI 1.0.0 POM pins Spring Boot 3.4.5 (exact match).
              Do NOT upgrade this to 1.0.9/1.1.x/2.x without an approved Boot upgrade. -->
-        <spring-ai.version>1.0.0</spring-ai.version>
+        <spring-ai.version>2.1.0</spring-ai.version>
     </properties>
 
     <dependencyManagement>
